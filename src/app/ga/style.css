@@ -1,0 +1,23 @@
+.container .table {
+  margin-top: 8px;
+}
+.container .title-table {
+  font-size: 18px;
+  font-weight: 600;
+}
+.content-table {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+body,
+html {
+  margin: 0;
+  background-image: url("../../img/bg_menu.jpg");
+  background-size: cover;
+  background-attachment: fixed;
+  padding: 0;
+}
+.input-price input {
+  height: 42px;
+  width: 16rem !important;
+}

@@ -2,6 +2,7 @@
 import { Button, Col, Form, Input, Row, message } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import { useState } from "react";
+import "./style.css";
 interface DataType {
   key: React.Key;
   name: string;
@@ -58,10 +59,10 @@ const GA = () => {
     },
   ];
   return (
-    <div className="bg-[url('../img/bg_menu.jpg')] h-screen w-full flex justify-center items-center scroll-py">
+    <div className=" container w-full flex justify-center items-center ">
       {contextHolder}
       {!(data.length > 0) ? (
-        <Col className="h-full m-auto pt-12">
+        <Col className="h-screen  pt-12">
           <Row>
             <div className="flex">
               <h1 className="text-black text-5xl">
@@ -69,7 +70,7 @@ const GA = () => {
               </h1>
             </div>
           </Row>
-          <Row className="h-full w-full justify-center flex items-center">
+          <Row className="h-[80%] w-full justify-center flex items-center">
             <Form
               form={form}
               className="flex justify-center"
@@ -83,13 +84,15 @@ const GA = () => {
               >
                 <Input
                   type="number"
-                  className="h-10 w-56"
-                  placeholder="Nhập trong khoảng 75-100"
+                  className="input-price "
+                  placeholder="Nhập trong khoảng 35000-80000"
+                  min={35000}
+                  addonAfter="VND"
                 />
               </Form.Item>
               <Button
                 type="primary"
-                className="bg-blue-500"
+                className="bg-blue-500 h-10 w-24"
                 onClick={handleSubmit}
               >
                 Submit
@@ -99,18 +102,18 @@ const GA = () => {
         </Col>
       ) : (
         <>
-          <div className="flex flex-col w-screen justify-center items-center h-full pt-10 pb-10">
+          <div className=" content-table flex flex-col w-full justify-center items-center pt-10 pb-10">
             {data.map((item, index) => {
               return (
                 <>
-                  <div key={index} className="w-1/2 h-full">
-                    <span className="text-black">
-                      {`Generation ${item.gen}  Fitness: ${item.fitness}`}
+                  <div key={index} className="w-[50vw] mt-4">
+                    <span className="title-table text-black ">
+                      {`Generation ${item?.gen}  Fitness: ${item?.fitness}`}
                     </span>
-                    <Row>
+                    <Row className="mb-2 table">
                       <Table
                         className="w-full"
-                        dataSource={item.data}
+                        dataSource={item?.data}
                         columns={columns}
                         pagination={false}
                       />
