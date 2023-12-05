@@ -1,5 +1,14 @@
 "use client";
-import { Button, Col, Form, Input, Row, Spin, message } from "antd";
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  Row,
+  Spin,
+  message,
+  notification,
+} from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import "./style.css";
@@ -11,6 +20,7 @@ interface DataType {
 }
 const GA = () => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [form] = Form.useForm();
   const [disable, setDisable] = useState(true);
@@ -23,20 +33,35 @@ const GA = () => {
     return Promise.resolve();
   };
   const handleSubmit = async () => {
-    const ga = form.getFieldValue("ga");
-    console.log(ga);
+    setLoading(true);
+    try {
+      const ga = form.getFieldValue("ga");
+      console.log(ga);
 
-    const res = await fetch("http://localhost:3001/ga", {
-      method: "POST",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ga: ga }),
-    });
-    const resData = await res.json();
-    setData(resData.data);
+      const res = await fetch("http://localhost:3001/ga", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ga: ga }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const resData = await res.json();
+      setData(resData.data);
+    } catch (error) {
+      notification.error({
+        message: "Lỗi server!",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
   const columns: ColumnsType<DataType> = [
     {
       title: "Thứ",
@@ -82,7 +107,7 @@ const GA = () => {
     },
   ];
   return (
-    <Spin spinning={data ? false : true}>
+    <Spin tip="Loading..." spinning={loading}>
       <div className=" container w-full flex justify-center items-center m-auto">
         {contextHolder}
         {!(data.length > 0) ? (
