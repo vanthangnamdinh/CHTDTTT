@@ -12,6 +12,15 @@ const GA = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [data, setData] = useState([]);
   const [form] = Form.useForm();
+  const [disable, setDisable] = useState(true);
+  const validateStartDate = (_rule: unknown, value: string) => {
+    if (!value && !form.getFieldValue("ga")) {
+      return Promise.reject("Vui lòng nhập số tiền mỗi bữa ăn");
+    } else if (form.getFieldValue("ga") < 30000) {
+      return Promise.reject("Số tiền nhập vào không đủ để tính toán");
+    }
+    return Promise.resolve();
+  };
   const handleSubmit = async () => {
     const ga = form.getFieldValue("ga");
     console.log(ga);
@@ -78,18 +87,24 @@ const GA = () => {
               <Form.Item
                 label={<span className="text-2xl">Nhập số tiền</span>}
                 className="pr-4"
-                required
                 name={"ga"}
+                rules={[{ required: true, validator: validateStartDate }]}
               >
                 <Input
                   type="number"
                   className="h-10 w-56"
                   placeholder="Nhập trong khoảng 75-100"
+                  onChange={(e) => {
+                    Number(e.target.value) >= 35000
+                      ? setDisable(false)
+                      : setDisable(true);
+                  }}
                 />
               </Form.Item>
               <Button
                 type="primary"
                 className="bg-blue-500"
+                disabled={disable}
                 onClick={handleSubmit}
               >
                 Submit
@@ -100,7 +115,7 @@ const GA = () => {
       ) : (
         <>
           <div className="flex flex-col w-screen justify-center items-center h-full pt-10 pb-10">
-            {data.map((item, index) => {
+            {data.map((item: Data, index) => {
               return (
                 <>
                   <div key={index} className="w-1/2 h-full">
@@ -126,82 +141,8 @@ const GA = () => {
   );
 };
 export default GA;
-const sampleData = [
-  {
-    gen: 1,
-    fitness: 14,
-    data: [
-      ["Thịt ba chỉ rang", "Canh rau đay"],
-      ["Thịt ba chỉ luộc", "Canh rau muống"],
-      ["Thịt bõ xào", "rau muống luộc"],
-      ["Cá thu kho", "xu hào xào"],
-      ["Thịt sốt đậu", "rau su su"],
-    ],
-  },
-  {
-    gen: 2,
-    fitness: 14,
-    data: [
-      ["Thịt ba chỉ rang", "Canh rau đay"],
-      ["Thịt ba chỉ luộc", "Canh rau muống"],
-      ["Thịt bõ xào", "rau muống luộc"],
-      ["Cá thu kho", "xu hào xào"],
-      ["Thịt sốt đậu", "rau su su"],
-    ],
-  },
-  {
-    gen: 3,
-    fitness: 14,
-    data: [
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-    ],
-  },
-  {
-    gen: 3,
-    fitness: 14,
-    data: [
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-    ],
-  },
-  {
-    gen: 3,
-    fitness: 14,
-    data: [
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-    ],
-  },
-  {
-    gen: 3,
-    fitness: 14,
-    data: [
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-      ["Thịt", "rau"],
-    ],
-  },
-  {
-    gen: 7,
-    fitness: 15,
-    data: [
-      ["Thịt ba chỉ rang cháy", "rau của cải xào"],
-      ["Thịt 7 món", "cà rốt luộc"],
-      ["Cá thu hấp", "rau muống xào"],
-      ["Thịt lợn rang", "rau su su xào"],
-      ["Thịt bò xào", "rau đay nấu cua"],
-    ],
-  },
-];
+type Data = {
+  gen: number;
+  fitness: number;
+  data: [];
+};
