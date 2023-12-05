@@ -1,7 +1,8 @@
 "use client";
-import { Button, Col, Form, Input, Row, message } from "antd";
+import { Button, Col, Form, Input, Row, Spin, message } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import { useState } from "react";
+import "./style.css";
 interface DataType {
   key: React.Key;
   name: string;
@@ -16,7 +17,7 @@ const GA = () => {
   const validateStartDate = (_rule: unknown, value: string) => {
     if (!value && !form.getFieldValue("ga")) {
       return Promise.reject("Vui lòng nhập số tiền mỗi bữa ăn");
-    } else if (form.getFieldValue("ga") < 30000) {
+    } else if (form.getFieldValue("ga") < 35000) {
       return Promise.reject("Số tiền nhập vào không đủ để tính toán");
     }
     return Promise.resolve();
@@ -65,79 +66,95 @@ const GA = () => {
         return record[1];
       },
     },
+    {
+      title: "Calo",
+      dataIndex: "",
+      render: (record) => {
+        return record[2];
+      },
+    },
+    {
+      title: "Tổng tiền",
+      dataIndex: "",
+      render: (record) => {
+        return record[3];
+      },
+    },
   ];
   return (
-    <div className="bg-[url('../img/bg_menu.jpg')] h-screen w-full flex justify-center items-center scroll-py">
-      {contextHolder}
-      {!(data.length > 0) ? (
-        <Col className="h-full m-auto pt-12">
-          <Row>
-            <div className="flex">
-              <h1 className="text-black text-5xl">
-                Hệ thống lên thực đơn cho nhà trẻ 5 tuổi
-              </h1>
+    <Spin spinning={data ? false : true}>
+      <div className=" container w-full flex justify-center items-center m-auto">
+        {contextHolder}
+        {!(data.length > 0) ? (
+          <Col className="h-screen  pt-12">
+            <Row>
+              <div className="flex">
+                <h1 className="text-black text-5xl">
+                  Hệ thống lên thực đơn cho nhà trẻ 5 tuổi
+                </h1>
+              </div>
+            </Row>
+            <Row className="h-[80%] w-full justify-center flex items-center">
+              <Form
+                form={form}
+                className="flex justify-center"
+                onFinish={handleSubmit}
+              >
+                <Form.Item
+                  label={<span className="text-2xl">Nhập số tiền</span>}
+                  className="pr-4"
+                  name={"ga"}
+                  rules={[{ required: true, validator: validateStartDate }]}
+                >
+                  <Input
+                    type="number"
+                    className="h-10 w-56 input-price "
+                    onChange={(e) => {
+                      Number(e.target.value) >= 35000
+                        ? setDisable(false)
+                        : setDisable(true);
+                    }}
+                    placeholder="Nhập trong khoảng 35000-80000"
+                  />
+                </Form.Item>
+                <Button
+                  type="primary"
+                  disabled={disable}
+                  className="bg-blue-500 h-10 w-24"
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </Button>
+              </Form>
+            </Row>
+          </Col>
+        ) : (
+          <>
+            <div className=" content-table flex flex-col w-full justify-center items-center pt-10 pb-10">
+              {data.map((item: Data, index) => {
+                return (
+                  <>
+                    <div key={index} className=" mt-4">
+                      <span className="title-table text-black ">
+                        {`Generation ${item?.gen}  Fitness: ${item?.fitness}`}
+                      </span>
+                      <Row className="mb-2 table">
+                        <Table
+                          className="w-[50vw]"
+                          dataSource={item?.data}
+                          columns={columns}
+                          pagination={false}
+                        />
+                      </Row>
+                    </div>
+                  </>
+                );
+              })}
             </div>
-          </Row>
-          <Row className="h-full w-full justify-center flex items-center">
-            <Form
-              form={form}
-              className="flex justify-center"
-              onFinish={handleSubmit}
-            >
-              <Form.Item
-                label={<span className="text-2xl">Nhập số tiền</span>}
-                className="pr-4"
-                name={"ga"}
-                rules={[{ required: true, validator: validateStartDate }]}
-              >
-                <Input
-                  type="number"
-                  className="h-10 w-56"
-                  placeholder="Nhập trong khoảng 75-100"
-                  onChange={(e) => {
-                    Number(e.target.value) >= 35000
-                      ? setDisable(false)
-                      : setDisable(true);
-                  }}
-                />
-              </Form.Item>
-              <Button
-                type="primary"
-                className="bg-blue-500"
-                disabled={disable}
-                onClick={handleSubmit}
-              >
-                Submit
-              </Button>
-            </Form>
-          </Row>
-        </Col>
-      ) : (
-        <>
-          <div className="flex flex-col w-screen justify-center items-center h-full pt-10 pb-10">
-            {data.map((item: Data, index) => {
-              return (
-                <>
-                  <div key={index} className="w-1/2 h-full">
-                    <span className="text-black">
-                      {`Generation ${item.gen}  Fitness: ${item.fitness}`}
-                    </span>
-                    <Row>
-                      <Table
-                        className="w-full"
-                        dataSource={item.data}
-                        columns={columns}
-                        pagination={false}
-                      />
-                    </Row>
-                  </div>
-                </>
-              );
-            })}
-          </div>
-        </>
-      )}
-    </div>
+          </>
+        )}
+      </div>
+    </Spin>
   );
 };
 export default GA;
